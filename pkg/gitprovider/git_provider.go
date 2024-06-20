@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-	"net/http"
 )
 
 const personalNamespaceId = "<PERSONAL>"
