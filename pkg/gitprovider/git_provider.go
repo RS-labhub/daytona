@@ -106,7 +106,15 @@ func (a *AbstractGitProvider) parseStaticGitContext(repoUrl string) (*StaticGitC
 		repo.Path = &branchPath
 	}
 
+<<<<<<< HEAD
 	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name, isHttps)
+=======
+	protocol := "https"
+	if !isHttpsAvailable(fmt.Sprintf("https://%s/%s/%s.git", repo.Source, repo.Owner, repo.Name)) {
+		protocol = "http"
+	}
+	repo.Url = getCloneUrl(protocol, repo.Source, repo.Owner, repo.Name)
+>>>>>>> 836c03a (fix: http git clone URL)
 
 	return repo, nil
 }
@@ -125,7 +133,12 @@ func (a *AbstractGitProvider) parseSshGitUrl(gitURL string) (*StaticGitContext, 
 	repo.Name = matches[3]
 	repo.Id = matches[3]
 
-	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name)
+	protocol := "https"
+	if !isHttpsAvailable(fmt.Sprintf("https://%s/%s/%s.git", repo.Source, repo.Owner, repo.Name)) {
+		protocol = "http"
+	}
+
+	repo.Url = getCloneUrl(protocol, repo.Source, repo.Owner, repo.Name)
 
 	return repo, nil
 }
