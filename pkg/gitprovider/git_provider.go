@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"net/http"
 )
 
 const personalNamespaceId = "<PERSONAL>"
@@ -124,15 +125,25 @@ func (a *AbstractGitProvider) parseSshGitUrl(gitURL string) (*StaticGitContext, 
 	repo.Name = matches[3]
 	repo.Id = matches[3]
 
-	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name, true)
+	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name)
 
 	return repo, nil
 }
 
-func getCloneUrl(source, owner, repo string, isHttps bool) string {
-	scheme := "http"
-	if isHttps {
-		scheme = "https"
+// isHttpsAvailable checks if the given URL is accessible via HTTPS
+func isHttpsAvailable(url string) bool {
+	resp, err := http.Head(url)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return false
 	}
-	return fmt.Sprintf("%s://%s/%s/%s.git", scheme, source, owner, repo)
+	return true
+}
+
+// getCloneUrl constructs the clone URL using the appropriate protocol
+func getCloneUrl(source, owner, repo string) string {
+	httpsUrl := fmt.Sprintf("https://%s/%s/%s.git", source, owner, repo)
+	if isHttpsAvailable(httpsUrl) {
+		return httpsUrl
+	}
+	return fmt.Sprintf("http://%s/%s/%s.git", source, owner, repo)
 }
