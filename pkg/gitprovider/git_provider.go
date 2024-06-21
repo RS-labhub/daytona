@@ -6,7 +6,6 @@ package gitprovider
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
@@ -107,6 +106,7 @@ func (a *AbstractGitProvider) parseStaticGitContext(repoUrl string) (*StaticGitC
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name, isHttps)
 =======
 	protocol := "https"
@@ -115,6 +115,9 @@ func (a *AbstractGitProvider) parseStaticGitContext(repoUrl string) (*StaticGitC
 	}
 	repo.Url = getCloneUrl(protocol, repo.Source, repo.Owner, repo.Name)
 >>>>>>> 836c03a (fix: http git clone URL)
+=======
+	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name)
+>>>>>>> 9ea75b2 (original git_provider)
 
 	return repo, nil
 }
@@ -133,17 +136,11 @@ func (a *AbstractGitProvider) parseSshGitUrl(gitURL string) (*StaticGitContext, 
 	repo.Name = matches[3]
 	repo.Id = matches[3]
 
-	protocol := "https"
-	if !isHttpsAvailable(fmt.Sprintf("https://%s/%s/%s.git", repo.Source, repo.Owner, repo.Name)) {
-		protocol = "http"
-	}
-
-	repo.Url = getCloneUrl(protocol, repo.Source, repo.Owner, repo.Name)
+	repo.Url = getCloneUrl(repo.Source, repo.Owner, repo.Name)
 
 	return repo, nil
 }
 
-// getCloneUrl constructs the clone URL using the appropriate protocol
-func getCloneUrl(protocol, source, owner, repo string) string {
-	return fmt.Sprintf("%s://%s/%s/%s.git", protocol, source, owner, repo)
+func getCloneUrl(source, owner, repo string) string {
+	return fmt.Sprintf("https://%s/%s/%s.git", source, owner, repo)
 }
