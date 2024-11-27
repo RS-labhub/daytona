@@ -629,6 +629,10 @@ func (d *DockerClient) getHostEnvVars(sshClient *ssh.Client) (map[string]string,
 }
 
 func execDevcontainerCommand(projectDir string, command []string, logWriter io.Writer, sshClient *ssh.Client) error {
+	for i, arg := range command {
+        command[i] = os.ExpandEnv(arg)
+    }
+
 	if sshClient != nil {
 		if command[0] == "sh" {
 			cmd := fmt.Sprintf(`sh -c "cd %s && %s"`, projectDir, strings.Join(command[2:], " "))
